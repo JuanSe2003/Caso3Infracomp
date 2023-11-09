@@ -11,7 +11,6 @@ public class Calculadora extends Thread {
 	private Integer algoritmo;
 	private Integer numeroCeros;
 	private Integer nthreads;
-	private boolean parar = false;
 
 	private String cadena;
 	private String v;
@@ -26,14 +25,16 @@ public class Calculadora extends Thread {
 	}
 
 	public void run() {
+		String respuesta = "";
 		long startTime = System.currentTimeMillis();
-		while (parar == false) {
+		while (Caso3.parar == false) {
 			try {
-				parar = buscar().contains(">>>v:");
+				respuesta = buscar();
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println(respuesta);
 		long endTime = System.currentTimeMillis();
 		long timeElapsed = endTime - startTime;
 		System.out.println("Tiempo de ejecucion en milisegundos: " + timeElapsed);
@@ -46,22 +47,25 @@ public class Calculadora extends Thread {
 		if (id == 1) {// THREAD 1
 			// Longitud mínima 1
 			for (int i = 0; i < alphabet.length(); i++) {
-				v = "" + alphabet.charAt(i);
-				cadenaFinal = cadena + v;
-				if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
-					parar = true;
-					return ">>>v:" + v + "Thread 1";
-
+				while (Caso3.parar == false) {
+					v = "" + alphabet.charAt(i);
+					cadenaFinal = cadena + v;
+					if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
+						Caso3.parar = true;
+						return ">>>v:" + v + "Thread 1";
+					}
 				}
 				;
 			}
 			// Longitud 2 a 7
 			for (int i = 2; i <= 7; i++) {
-				// Generar permutaciones de longitud i
-				String resultado = permutations(alphabet, "", i);
-				if (resultado != null) {
-					parar = true;
-					return resultado + "Thread 1";
+				while (Caso3.parar == false) {
+					// Generar permutaciones de longitud i
+					String resultado = permutations(alphabet, "", i);
+					if (resultado != null) {
+						Caso3.parar = true;
+						return resultado + "Thread 1";
+					}
 				}
 			}
 
@@ -69,22 +73,25 @@ public class Calculadora extends Thread {
 			// Longitud 2 a 7
 			for (int i = 7; i >= 2; i--) {
 				// Generar permutaciones de longitud i
-
-				String resultado = permutations(alphabet, "", i);
-				if (resultado != null) {
-					parar = true;
-					return resultado + "Thread 2";
+				while (Caso3.parar == false) {
+					String resultado = permutations(alphabet, "", i);
+					if (resultado != null) {
+						Caso3.parar = true;
+						return resultado + "Thread 2";
+					}
 				}
 			}
 			// Longitud mínima 1
 			for (int i = 0; i < alphabet.length(); i++) {
-				v = "" + alphabet.charAt(i);
-				cadenaFinal = cadena + v;
-				if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
-					parar = true;
-					return ">>>v:" + v + "Thread 2";
+				while (Caso3.parar == false) {
+					v = "" + alphabet.charAt(i);
+					cadenaFinal = cadena + v;
+					if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
+						Caso3.parar = true;
+						return ">>>v:" + v + "Thread 2";
+					}
+					;
 				}
-				;
 			}
 		}
 		return ">>>! si no hay nada hasta ahora, no hay respuesta para espacio de busqueda";
