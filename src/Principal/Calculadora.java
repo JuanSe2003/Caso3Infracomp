@@ -8,6 +8,7 @@ import AlgoritmosHash.SHA512;
 
 public class Calculadora extends Thread {
 	private Integer id;
+
 	private Integer algoritmo;
 	private Integer numeroCeros;
 	private Integer nthreads;
@@ -15,24 +16,24 @@ public class Calculadora extends Thread {
 	private String cadena;
 	private String v;
 	private String cadenaFinal = "";
+	private Object lock;
 
-	public Calculadora(int id, Integer algoritmo, String cadena, int numeroCeros, int nThreads) {
+	public Calculadora(int id, Integer algoritmo, String cadena, int numeroCeros, int nThreads, Object lock) {
 		this.id = id;
 		this.algoritmo = algoritmo;
 		this.cadena = cadena;
 		this.numeroCeros = numeroCeros;
 		this.nthreads = nThreads;
+		this.lock = lock;
 	}
 
 	public void run() {
 		String respuesta = "";
 		long startTime = System.currentTimeMillis();
-		while (Caso3.parar == false) {
-			try {
-				respuesta = buscar();
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			}
+		try {
+			respuesta = buscar();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
 		}
 		System.out.println(respuesta);
 		long endTime = System.currentTimeMillis();
@@ -41,76 +42,102 @@ public class Calculadora extends Thread {
 	}
 
 	public String buscar() throws NoSuchAlgorithmException {
-
 		String alphabet = "abcdefghijklmnopqrstuvwxyz";
+		int i;
 
-		if (id == 1) {// THREAD 1
+		if (id == 1) {
+			// THREAD 1
 			// Longitud mínima 1
-			for (int i = 0; i < alphabet.length(); i++) {
-				while (Caso3.parar == false) {
-					v = "" + alphabet.charAt(i);
-					cadenaFinal = cadena + v;
-					if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
-						Caso3.parar = true;
-						return ">>>v:" + v + "Thread 1";
-					}
+			i = 0;
+			while (i < alphabet.length() && !getParar()) {
+				v = "" + alphabet.charAt(i);
+				cadenaFinal = cadena + v;
+				if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
+					setParar(true);
+					return ">>>v:" + v + " Thread 1";
 				}
-				;
-			}
-			// Longitud 2 a 7
-			for (int i = 2; i <= 7; i++) {
-				while (Caso3.parar == false) {
-					// Generar permutaciones de longitud i
-					String resultado = permutations(alphabet, "", i);
-					if (resultado != null) {
-						Caso3.parar = true;
-						return resultado + "Thread 1";
-					}
-				}
+				i++;
 			}
 
-		} else {// THREAD 2
 			// Longitud 2 a 7
-			for (int i = 7; i >= 2; i--) {
+			i = 2;
+			while (i <= 7 && !getParar()) {
 				// Generar permutaciones de longitud i
-				while (Caso3.parar == false) {
-					String resultado = permutations(alphabet, "", i);
-					if (resultado != null) {
-						Caso3.parar = true;
-						return resultado + "Thread 2";
-					}
+				String resultado = permutations(alphabet, "", i);
+				if (resultado != null) {
+					setParar(true);
+					return resultado + " Thread 1";
 				}
+				i++;
 			}
-			// Longitud mínima 1
-			for (int i = 0; i < alphabet.length(); i++) {
-				while (Caso3.parar == false) {
-					v = "" + alphabet.charAt(i);
-					cadenaFinal = cadena + v;
-					if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
-						Caso3.parar = true;
-						return ">>>v:" + v + "Thread 2";
-					}
-					;
+		} else {
+			// THREAD 2
+			// Longitud 2 a 7
+			i = 7;
+			while (i >= 2 && !getParar()) {
+				// Generar permutaciones de longitud i
+				String resultado = permutations(alphabet, "", i);
+				if (resultado != null) {
+					setParar(true);
+					return resultado + " Thread 2";
 				}
+				i--;
+			}
+
+			// Longitud mínima 1
+			i = 0;
+			while (i < alphabet.length() && !getParar()) {
+				v = "" + alphabet.charAt(i);
+				cadenaFinal = cadena + v;
+				if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
+
+					return ">>>v:" + v + " Thread 2";
+				}
+				i++;
 			}
 		}
 		return ">>>! si no hay nada hasta ahora, no hay respuesta para espacio de busqueda";
 	}
 
-	public String permutations(String alphabet, String prefix, int lenght) throws NoSuchAlgorithmException {
+	private boolean getParar() {
+		synchronized (lock) {
+			return Caso3.parar;
+		}
+	}
 
-		if (prefix.length() == lenght) {
+	private void setParar(boolean valor) {
+		synchronized (lock) {
+			Caso3.parar = valor;
+		}
+	}
+
+	public String permutations(String alphabet, String prefix, int length) throws NoSuchAlgorithmException {
+		// Verificar la condición de parada al inicio de la función
+		if (getParar()) {
+			return null; // Si se debe parar, termina la ejecución inmediatamente.
+		}
+
+		if (prefix.length() == length) {
 			v = prefix;
 			cadenaFinal = cadena + v;
 			if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
+				setParar(true); // Indica a otros hilos que detengan su ejecución.
 				return ">>>v:" + v;
 			}
 			return null;
 		}
 
 		for (int i = 0; i < alphabet.length(); i++) {
-			String result = permutations(alphabet, prefix + alphabet.charAt(i), lenght);
+			// Aquí también se puede verificar la condición de parada antes de la recursión.
+			if (getParar()) {
+				return null; // De nuevo, si se debe parar, termina la ejecución inmediatamente.
+			}
+
+			String result = permutations(alphabet, prefix + alphabet.charAt(i), length);
 			if (result != null) {
+				// No es necesario llamar a setParar(true) aquí porque
+				// ya se habría llamado dentro de la instancia de la función que encontró el
+				// resultado.
 				return result;
 			}
 		}

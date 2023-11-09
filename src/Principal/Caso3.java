@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Caso3 {
 
-	static boolean parar;
+	public static volatile boolean parar;
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 		Scanner scanner = new Scanner(System.in);
