@@ -2,10 +2,11 @@ package Principal;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Caso3 {
 
-	public static volatile boolean parar;
+	public static volatile boolean parar = false;
 
 	public static void main(String[] args) throws NoSuchAlgorithmException {
 		Scanner scanner = new Scanner(System.in);
@@ -23,14 +24,14 @@ public class Caso3 {
 		int numeroThreads = Integer.valueOf(scanner.nextInt());
 
 		scanner.close();
-		parar = false;
-
+		Object lock = new Object();
 		if (numeroThreads == 1) {
-			Calculadora calculadora = new Calculadora(1, algoritmoHash, cadenaC, Numero_Ceros, numeroThreads);
+			Calculadora calculadora = new Calculadora(1, algoritmoHash, cadenaC, Numero_Ceros, numeroThreads, lock);
 			calculadora.start();
 		} else {
-			Calculadora c1 = new Calculadora(1, algoritmoHash, cadenaC, Numero_Ceros, numeroThreads);
-			Calculadora c2 = new Calculadora(2, algoritmoHash, cadenaC, Numero_Ceros, numeroThreads);
+
+			Calculadora c1 = new Calculadora(1, algoritmoHash, cadenaC, Numero_Ceros, numeroThreads, lock);
+			Calculadora c2 = new Calculadora(2, algoritmoHash, cadenaC, Numero_Ceros, numeroThreads, lock);
 			c1.start();
 			c2.start();
 		}
