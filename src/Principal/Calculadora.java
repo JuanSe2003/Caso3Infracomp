@@ -43,6 +43,7 @@ public class Calculadora extends Thread {
 
 	public String buscar() throws NoSuchAlgorithmException {
 		String alphabet = "abcdefghijklmnopqrstuvwxyz";
+		String alphabet2 = "zyxwvutsrqponmlkjihgfedcba";
 		int i;
 
 		if (id == 1) {
@@ -76,7 +77,7 @@ public class Calculadora extends Thread {
 			i = 7;
 			while (i >= 2 && !getParar()) {
 				// Generar permutaciones de longitud i
-				String resultado = permutations(alphabet, "", i);
+				String resultado = permutations(alphabet2, "", i);
 				if (resultado != null) {
 					setParar(true);
 					return resultado + " Thread 2";
@@ -86,8 +87,8 @@ public class Calculadora extends Thread {
 
 			// Longitud mínima 1
 			i = 0;
-			while (i < alphabet.length() && !getParar()) {
-				v = "" + alphabet.charAt(i);
+			while (i < alphabet2.length() && !getParar()) {
+				v = "" + alphabet2.charAt(i);
 				cadenaFinal = cadena + v;
 				if (verificarHash(mostrarHash(cadenaFinal), numeroCeros)) {
 
