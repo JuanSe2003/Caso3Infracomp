@@ -18,8 +18,6 @@ public class Calculadora extends Thread {
 	private String cadenaFinal = "";
 	private Object lock;
 
-	// public static double tiempoTotal = 0;
-
 	public Calculadora(int id, Integer algoritmo, String cadena, int numeroCeros, int nThreads, Object lock) {
 		this.id = id;
 		this.algoritmo = algoritmo;
@@ -166,7 +164,6 @@ public class Calculadora extends Thread {
 	}
 
 	public boolean verificarHash(String hash, int nBitsCero) {
-		long startTime = System.currentTimeMillis();
 		int nBits = 0;
 
 		for (char c : hash.toCharArray()) {
@@ -186,9 +183,7 @@ public class Calculadora extends Thread {
 				}
 			}
 		}
-		long endTime = System.currentTimeMillis();
-		long timeElapsed = endTime - startTime;
-		System.out.println("Tiempo de ejecucion en milisegundos: " + timeElapsed);
+
 		return nBits >= nBitsCero; // Retorna verdadero si hemos encontrado suficientes bits cero
 	}
 
