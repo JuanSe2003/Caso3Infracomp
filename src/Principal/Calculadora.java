@@ -175,9 +175,9 @@ public class Calculadora extends Thread {
 					if ((value & (1 << i)) == 0) {
 						nBits++;
 					} else {
-						return false; // Retorna falso tan pronto como encuentres un bit que no es cero
+						return false; // Retorna falso si encuentra un bit uno
 					}
-					if (nBits >= nBitsCero) { // Si hemos encontrado suficientes bits cero, retorna verdadero
+					if (nBits >= nBitsCero) { // Retorna verdadero si hemos encontrado suficientes bits cero
 						return true;
 					}
 				}
