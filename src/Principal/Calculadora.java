@@ -18,7 +18,7 @@ public class Calculadora extends Thread {
 	private String cadenaFinal = "";
 	private Object lock;
 
-	public static double tiempoTotal =
+	// public static double tiempoTotal = 0;
 
 	public Calculadora(int id, Integer algoritmo, String cadena, int numeroCeros, int nThreads, Object lock) {
 		this.id = id;
@@ -188,7 +188,7 @@ public class Calculadora extends Thread {
 		}
 		long endTime = System.currentTimeMillis();
 		long timeElapsed = endTime - startTime;
-
+		System.out.println("Tiempo de ejecucion en milisegundos: " + timeElapsed);
 		return nBits >= nBitsCero; // Retorna verdadero si hemos encontrado suficientes bits cero
 	}
 
